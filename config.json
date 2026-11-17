@@ -1,0 +1,35 @@
+{
+  "writer_model": "deepseek-chat",
+  "reviewer_model": "deepseek-reasoner",
+  "voice_id": "vbee_hn_male_phuthang_stor_24k-stl",
+  "voice_speed": 1.0,
+  "short_voice_speed": 1.1,
+  "image_model_character": "gemini-3.1-flash-lite-image",
+  "image_model_background": "gpt-image-2",
+  "style": "Simple crude 2D cartoon drawn like a Vietnamese meme comic: big round head, small body, thin stick-like arms and legs, deadpan meme-style facial expressions with simple dot or line eyes, thick slightly uneven black outlines, flat solid colors, no shading, no gradients, no texture, minimal detail, clean simple shapes",
+  "budget_vnd_per_video": 10000,
+  "width": 1920,
+  "height": 1080,
+  "fps": 30,
+  "gap_seconds": 0.25,
+  "music_volume": 0.12,
+  "subtitle_font": "/System/Library/Fonts/Supplemental/Arial Bold.ttf",
+  "subtitle_size": 56,
+  "emphasis_font": "fonts/Anton-Regular.ttf",
+  "concurrency": 4,
+  "mc": {
+    "id": "mc",
+    "ten": "MC kênh",
+    "ngoai_hinh_en": "a skinny young Vietnamese man with messy black hair, round glasses, grey hoodie, black trousers, permanently bored deadpan face",
+    "anh_goc": "library/nhan_vat/mc/goc.png"
+  },
+  "words_per_min": 240,
+  "target_minutes": 12,
+  "deepseek_usd_per_mtok": {
+    "in": 0.28,
+    "out": 0.42
+  },
+  "usd_vnd": 26000,
+  "scene_seconds": 8,
+  "max_bieu_cam_moi": 6
+}

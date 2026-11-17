@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phòng điều hành studio</title>
+<style>
+:root{--bg:#f5f4f0;--panel:#fff;--ink:#1d1d1b;--mut:#6d6b66;--line:#e3e0d8;--acc:#2f5bd3;--ok:#1f8a4c;--warn:#c27a00;--bad:#c63b2f;--run:#2f5bd3;--soft:#f0eee8;--code:#faf9f6}
+@media (prefers-color-scheme:dark){:root{--bg:#141413;--panel:#1e1e1c;--ink:#ecebe6;--mut:#9b9890;--line:#33322f;--acc:#7c9cff;--ok:#4cc27e;--warn:#e6a93a;--bad:#ff7466;--run:#7c9cff;--soft:#262624;--code:#181817}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+button,input,select{font:inherit;color:inherit}
+header{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0;z-index:5}
+header h1{font-size:16px;margin:0}
+header .tick{margin-left:auto;color:var(--mut);font-size:12px}
+.wrap{display:grid;grid-template-columns:270px 1fr;min-height:calc(100vh - 50px)}
+aside{border-right:1px solid var(--line);padding:16px;background:var(--panel)}
+main{padding:20px;min-width:0}
+.newbox textarea{width:100%;min-height:60px;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);resize:vertical}
+.btn{border:1px solid var(--line);background:var(--panel);padding:7px 12px;border-radius:8px;cursor:pointer}
+.btn:hover{border-color:var(--acc)}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:#fff}
+.btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.btn.bad{color:var(--bad);border-color:var(--bad)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.plist{list-style:none;margin:16px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.plist li{padding:10px;border:1px solid var(--line);border-radius:10px;cursor:pointer}
+.plist li.on{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc) inset}
+.plist .t{font-weight:600;font-size:13px}
+.plist .s{color:var(--mut);font-size:12px;display:flex;gap:6px;align-items:center;margin-top:2px}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;background:var(--mut);flex:none}
+.dot.run{background:var(--run);animation:pulse 2.4s ease-in-out infinite}.dot.wait{background:var(--warn)}.dot.bad{background:var(--bad)}.dot.ok{background:var(--ok)}
+@keyframes pulse{50%{opacity:.6}}
+.head{display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px;margin-bottom:14px}
+.head h2{margin:0;font-size:20px}
+.head .sub{color:var(--mut)}
+.ctl{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.bar{height:8px;background:var(--soft);border-radius:4px;overflow:hidden;width:220px}
+.bar i{display:block;height:100%;background:var(--ok)}
+.bar.over i{background:var(--bad)}
+.banner{border-radius:12px;padding:14px 16px;margin-bottom:14px;border:1px solid var(--line);background:var(--panel)}
+.banner.run{border-color:var(--run)}.banner.wait{border-color:var(--warn)}.banner.bad{border-color:var(--bad)}
+.banner b{font-size:15px}
+.banner .line{font-family:ui-monospace,Menlo,monospace;font-size:13px;margin-top:6px;color:var(--mut)}
+.pipe{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;margin-bottom:16px}
+.card{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--panel);cursor:pointer;position:relative}
+.card.gate{background:var(--soft)}
+.card.claude{border-style:dashed}.card.bo_qua{opacity:.45}
+.banner.claude{border-color:#9b59d0}
+.card.dang_lam{border-color:var(--run);box-shadow:0 0 0 1px var(--run) inset}
+.card.cho_duyet{border-color:var(--warn);box-shadow:0 0 0 1px var(--warn) inset}
+.card.loi{border-color:var(--bad);box-shadow:0 0 0 1px var(--bad) inset}
+.card .n{font-weight:600;display:flex;gap:6px;align-items:center}
+.card .r{color:var(--mut);font-size:12px;margin-top:2px}
+.card .st{font-size:12px;margin-top:8px;display:flex;align-items:center;gap:6px}
+.card .h{font-size:12px;margin-top:6px;color:var(--ink);opacity:.85;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card .num{position:absolute;top:10px;right:12px;color:var(--mut);font-size:11px}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:10px;flex-wrap:wrap}
+.tabs button{border:0;background:none;padding:8px 12px;cursor:pointer;color:var(--mut);border-bottom:2px solid transparent}
+.tabs button.on{color:var(--ink);border-bottom-color:var(--acc)}
+pre.log{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:12px;height:360px;overflow:auto;font:12px/1.5 ui-monospace,Menlo,monospace;white-space:pre-wrap;margin:0}
+table{width:100%;border-collapse:collapse;font-size:13px}
+td,th{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+td.r,th.r{text-align:right;font-variant-numeric:tabular-nums}
+.gatebox{display:flex;flex-direction:column;gap:12px}
+.gatebox img{max-width:100%;border-radius:8px;border:1px solid var(--line)}
+.vids{display:grid;grid-template-columns:2fr 1fr;gap:12px}
+.vids video{width:100%;border-radius:8px;background:#000;max-height:420px}
+.thumbs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row input{padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);min-width:200px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:12px;text-decoration:none;color:var(--ink)}
+.chip:hover{border-color:var(--acc)}
+.mut{color:var(--mut)}
+dialog{border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--ink);width:min(860px,94vw);max-height:86vh;padding:0}
+dialog::backdrop{background:#0006}
+dialog .dh{display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);gap:8px}
+dialog .db{padding:16px;overflow:auto;max-height:calc(86vh - 60px)}
+dialog pre{white-space:pre-wrap;font:13px/1.55 ui-monospace,Menlo,monospace;margin:0}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;opacity:0;transition:.2s;pointer-events:none;max-width:90vw}
+.toast.on{opacity:1}
+.empty{color:var(--mut);padding:40px;text-align:center}
+dialog{width:min(1100px,96vw)}
+.svh{margin:18px 0 8px;font-size:14px}
+.story{max-width:720px}.story h3{margin:0 0 10px}.story p{margin:0 0 10px;line-height:1.65}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
+.grid.big{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+.th,.wide{display:block;border:1px solid var(--line);border-radius:8px;overflow:hidden;text-decoration:none;color:var(--mut);background:var(--soft)}
+.th img{width:100%;height:120px;object-fit:contain;display:block;background:#fff}
+.grid.big .th img{height:auto;aspect-ratio:16/9;object-fit:cover}
+.wide img{width:100%;display:block}
+.th span,.wide span{display:block;font-size:11px;padding:3px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.th.miss img,.wide.miss img{visibility:hidden}.th.miss{background:repeating-linear-gradient(45deg,var(--soft),var(--soft) 6px,var(--line) 6px,var(--line) 12px)}
+.grp{margin-bottom:12px}.grp b{display:block;margin-bottom:6px}
+table.scenes td{vertical-align:top}
+td.scn{width:190px}
+.scnbox{position:relative;width:180px;aspect-ratio:16/9;border-radius:6px;overflow:hidden;background:var(--soft)}
+.scnbox>img{width:100%;height:100%;object-fit:cover;display:block}
+.scnbox.sm9{width:150px}
+.ppl{position:absolute;inset:auto 0 0 0;display:flex;justify-content:space-around;align-items:flex-end;height:78%}
+.ppl img{height:100%;max-width:34%;object-fit:contain}
+tr.db td{background:color-mix(in srgb,var(--warn) 8%,transparent)}
+.emph{display:inline-block;margin-top:4px;font-weight:700;color:var(--bad);font-size:12px}
+.sm{font-size:11px}
+table.voice audio{height:30px;width:230px}
+tr.off td{background:color-mix(in srgb,var(--bad) 9%,transparent)}
+pre.mk{white-space:pre-wrap;background:var(--code);border:1px solid var(--line);border-radius:10px;padding:12px}
+@media (max-width:820px){.wrap{grid-template-columns:1fr}aside{border-right:0;border-bottom:1px solid var(--line)}.vids{grid-template-columns:1fr}main{padding:16px}}
+</style>
+</head>
+<body>
+<header><h1>🎬 Phòng điều hành studio</h1><span class="tick" id="tick">…</span></header>
+<div class="wrap">
+<aside>
+  <div class="newbox">
+    <div style="font-weight:600;margin-bottom:6px">Video mới</div>
+    <textarea id="topic" placeholder="Đề tài + góc kể, vd: Lần đầu đi làm bị sếp bắt OT không lương"></textarea>
+    <div class="row" style="margin-top:6px"><button class="btn pri" onclick="newVideo()">Tạo video</button><span class="mut" style="font-size:12px">chỉ tạo hồ sơ, chưa tốn tiền</span></div>
+  </div>
+  <ul class="plist" id="plist"></ul>
+</aside>
+<main id="main"><div class="empty">Chọn một video bên trái</div></main>
+</div>
+<dialog id="dlg"><div class="dh"><b id="dlgT"></b><a id="dlgOpen" class="chip" target="_blank" style="margin-left:auto">mở tab mới</a><button class="btn" onclick="dlg.close()">Đóng</button></div><div class="db" id="dlgB"></div></dialog>
+<div class="toast" id="toast"></div>
+<script>
+const $=s=>document.querySelector(s);
+const vnd=x=>Math.round(x||0).toLocaleString('vi-VN')+'đ';
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let cur=null,data=null,tab='log',logPinned=true;
+try{cur=localStorage.getItem('cur');tab=localStorage.getItem('tab')||'log'}catch(e){}
+const STAT={bo_qua:['','Bỏ qua (video cũ)'],xong:['ok','Xong'],dang_lam:['run','Đang làm'],cho_duyet:['wait','Chờ Giám đốc'],loi:['bad','Lỗi'],cho:['','Chờ']};
+const STAGE=s=>!s?'Mới tạo':s==='xong'?'✅ Hoàn tất':s.startsWith('@')?'⏸ '+({'@claude_kich_ban':'Claude duyệt kịch bản','@claude_anh':'Claude duyệt ảnh','@claude_video':'Claude duyệt video','@ngan_sach':'Cổng ① báo giá','@duyet_anh':'Cổng ② ảnh lưới','@duyet_cuoi':'Cổng ③ bản cuối'}[s]||s):s;
+
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('on'),3500)}
+async function post(url,body){const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body||{})});const j=await r.json();toast(j.msg||(j.ok?'OK':'Lỗi'));refresh();return j}
+async function newVideo(){const t=$('#topic').value.trim();if(!t)return toast('Nhập đề tài trước');const j=await post('/api/new',{topic:t});if(j.ok){$('#topic').value='';pick(j.id)}}
+function pick(id){cur=id;try{localStorage.setItem('cur',id)}catch(e){};logPinned=true;refresh()}
+function setTab(t){tab=t;try{localStorage.setItem('tab',t)}catch(e){};lastSig='';render()}
+function cmd(c,body){if(c==='dung'&&!confirm('Dừng nhân viên đang làm?'))return;post(`/api/p/${cur}/${c}`,body)}
+function f(name){return `/f/${cur}/${name}?v=${data.files[name]||0}`}
+async function view(title,url){$('#dlgT').textContent=title;$('#dlgOpen').href=url;$('#dlgB').innerHTML='<span class="mut">Đang tải…</span>';dlg.showModal();
+  if(/\.(png|jpg)/.test(url)){$('#dlgB').innerHTML=`<img src="${url}" style="max-width:100%">`;return}
+  const t=await (await fetch(url)).text();$('#dlgB').innerHTML=`<pre>${esc(t)}</pre>`}
+
+let lastPl='';
+function plist(ps){const pl=JSON.stringify(ps)+cur;if(pl===lastPl)return;lastPl=pl;$('#plist').innerHTML=ps.map(p=>{
+  const cls=p.running?'run':p.error?'bad':(p.stage||'').startsWith('@')?'wait':p.stage==='xong'?'ok':'';
+  return `<li class="${p.id===cur?'on':''}" onclick="pick('${p.id}')"><div class="t">${p.id} · ${esc(p.topic)}</div>
+  <div class="s"><span class="dot ${cls}"></span>${p.running?'Đang chạy':esc(STAGE(p.stage))} · ${vnd(p.spent)}</div></li>`}).join('')||'<li class="mut">Chưa có video</li>'}
+
+let lastSig='';
+function live_update(){const lv=data.live;
+  document.querySelectorAll('.curline').forEach(e=>e.textContent=lv.line||'…');
+  const el=$('#elapsed');if(el)el.textContent=elapsed(data.now-(lv.started||data.now));
+  const lg=$('#log');if(lg&&lg.textContent!==data.log){lg.textContent=data.log;if(logPinned)lg.scrollTop=lg.scrollHeight}}
+function elapsed(s){s=Math.max(0,Math.round(s));return s<60?s+'s':Math.floor(s/60)+'p'+String(s%60).padStart(2,'0')+'s'}
+
+function render(){
+  if(!data){return}
+  const s=data.state,lv=data.live,run=lv.running,stage=s.stage||'';
+  const over=data.spent>s.budget_vnd,pct=Math.min(100,data.spent/s.budget_vnd*100);
+  const curStep=data.steps.find(x=>x.status==='dang_lam');
+  const ag=data.steps.filter(x=>!x.gate);
+  let h=`<div class="head"><div><div class="sub">${s.id} · tạo ${esc((s.created||'').replace('T',' '))}</div><h2>${esc(s.topic)}</h2>
+   <div class="sub" style="display:flex;gap:10px;align-items:center;margin-top:4px">${esc(STAGE(stage))} · <span class="bar ${over?'over':''}"><i style="width:${pct}%"></i></span> ${vnd(data.spent)} / ${vnd(s.budget_vnd)}</div></div>
+   <div class="ctl">
+    <button class="btn pri" ${run||stage.startsWith('@')||stage==='xong'?'disabled':''} onclick="cmd('chay')">▶ Chạy tiếp</button>
+    <button class="btn bad" ${run?'':'disabled'} onclick="cmd('dung')">■ Dừng</button>
+    <select id="redo" ${run?'disabled':''}><option value="">Làm lại từ bước…</option>${ag.map(x=>`<option value="${x.code}">${esc(x.label)}</option>`).join('')}</select>
+    <button class="btn" ${run?'disabled':''} onclick="redo()">Đặt lại</button>
+   </div></div>`;
+  if(run){const st=curStep||{icon:'⚙️',label:lv.label||'Đang xử lý'};
+    h+=`<div class="banner run"><span class="dot run"></span> <b>${st.icon} ${esc(lv.label||st.label)}</b> đang làm · <span id="elapsed">${elapsed(data.now-(lv.started||data.now))}</span> · đã tiêu ${vnd(data.spent-(lv.spent0??data.spent))} ở bước này
+    <div class="line curline">${esc(lv.line||'…')}</div></div>`}
+  else if(lv.error){h+=`<div class="banner bad"><b>🔴 Có lỗi</b><div class="line">${esc(lv.error)}</div><div class="row" style="margin-top:8px"><button class="btn pri" onclick="cmd('chay')">Chạy lại bước này</button><span class="mut">Xem chi tiết ở tab Nhật ký</span></div></div>`}
+  h+=gatePanel();
+  h+=`<div class="pipe">${data.steps.map((x,i)=>{const [c,t]=STAT[x.status];
+    const line=x.status==='dang_lam'?`<span class="curline">${esc(lv.line||'…')}</span>`:esc(x.handoff?x.handoff.da_lam:x.role)+(x.handoff&&x.handoff.luu_y?' ⚠ '+esc(x.handoff.luu_y):'');
+    return `<div class="card ${x.gate?'gate':''} ${x.claude?'claude':''} ${x.status}" onclick="stepInfo(${i})"><span class="num">${i+1}</span>
+    <div class="n">${x.icon} ${esc(x.label)}</div><div class="r">${esc(x.tool)}</div>
+    <div class="st"><span class="dot ${c}"></span>${t}${x.handoff&&x.handoff.chi_phi_vnd?' · '+vnd(x.handoff.chi_phi_vnd):''}${x.handoff?' · '+x.handoff.luc:''}</div>
+    <div class="h">${line}</div></div>`}).join('')}</div>`;
+  const T={log:'Nhật ký',cost:'Chi phí',hand:'Phiếu bàn giao',files:'File & sản phẩm'};
+  h+=`<div class="tabs">${Object.entries(T).map(([k,v])=>`<button class="${tab===k?'on':''}" onclick="setTab('${k}')">${v}</button>`).join('')}</div><div id="tabBody">${tabBody()}</div>`;
+  const old=$('#log');const keep=old&&!logPinned?old.scrollTop:null;
+  $('#main').innerHTML=h;
+  const lg=$('#log');if(lg){lg.scrollTop=keep??lg.scrollHeight;lg.onscroll=()=>{logPinned=lg.scrollTop+lg.clientHeight>=lg.scrollHeight-20}}
+}
+
+function gatePanel(){
+  const s=data.state,st=s.stage||'';if(!st.startsWith('@')||!s.waiting_for)return '';
+  let b='';
+  if(st.startsWith('@claude'))return `<div class="banner claude"><b>🧐 Chờ Claude kiểm duyệt: ${esc(STAGE(st).slice(2))}</b>
+    <div class="mut" style="margin-top:4px">${esc(data.gate_msg)}</div>
+    <div style="margin-top:6px">Đã chi cho việc sửa: <b>${vnd(data.qc_spent)}</b> / ${vnd(s.qc_cap_vnd||3000)} · tối đa 2 vòng mỗi khâu</div></div>`;
+  if(st==='@ngan_sach'){const c=data.can_ve||{};
+    b=`<table><tr><th>Hạng mục</th><th class="r">Số ảnh</th></tr>
+    <tr><td>Nhân vật gốc</td><td class="r">${(c.nhan_vat_goc||[]).length}</td></tr><tr><td>Biểu cảm</td><td class="r">${Object.keys(c.bieu_cam||{}).length}</td></tr>
+    <tr><td>Nền</td><td class="r">${Object.keys(c.nen||{}).length}</td></tr><tr><td>Cảnh vẽ nguyên khung</td><td class="r">${(c.dac_biet||[]).length}</td></tr>
+    <tr><th>Ước tính</th><th class="r">${vnd(c.uoc_tinh_vnd)}</th></tr></table>
+    <div class="row"><button class="btn ok" onclick="cmd('duyet')">✓ Duyệt báo giá — cho Họa sĩ vẽ</button><button class="btn" onclick="view('can_ve.json','${f('can_ve.json')}')">Xem chi tiết</button></div>`}
+  if(st==='@duyet_anh'){b=`${data.files['luoi_canh.png']?`<a href="${f('luoi_canh.png')}" target="_blank"><img src="${f('luoi_canh.png')}"></a>`:''}
+    <div class="row"><button class="btn ok" onclick="cmd('duyet')">✓ Ảnh ổn — lồng tiếng & dựng</button>
+    <input id="canh" placeholder="Số cảnh cần vẽ lại, vd: 12 37"><button class="btn" onclick="cmd('ve-lai',{canh:$('#canh').value})">Vẽ lại</button></div>`}
+  if(st==='@duyet_cuoi'){b=finalBox()+`<div class="row"><button class="btn ok" onclick="cmd('duyet')">✓ Duyệt bản cuối — hoàn tất</button></div>`}
+  return `<div class="banner wait"><b>⏸ Chờ Giám đốc: ${esc(STAGE(st).slice(2))}</b><div class="mut" style="margin:4px 0 12px">${esc(data.gate_msg)}</div><div class="gatebox">${b}</div></div>`}
+
+function finalBox(){const F=data.files;return `<div class="vids">
+  ${F['final_16x9.mp4']?`<div><div class="mut">Bản dài 16:9</div><video controls preload="metadata" src="${f('final_16x9.mp4')}"></video></div>`:''}
+  ${F['final_9x16.mp4']?`<div><div class="mut">Shorts 9:16</div><video controls preload="metadata" src="${f('final_9x16.mp4')}"></video></div>`:''}</div>
+  <div class="thumbs">${['thumbnail_A.png','thumbnail_B.png'].filter(x=>F[x]).map(x=>`<a href="${f(x)}" target="_blank"><img src="${f(x)}" style="width:100%;border-radius:8px"></a>`).join('')}</div>
+  ${data.marketing?`<details><summary>Marketing (tiêu đề, mô tả, hashtag)</summary><pre style="white-space:pre-wrap">${esc(data.marketing)}</pre></details>`:''}`}
+
+function tabBody(){
+  if(tab==='log')return `<pre class="log" id="log">${esc(data.log)||'Chưa có nhật ký (nhật ký bắt đầu ghi từ lần chạy tiếp theo).'}</pre>`;
+  if(tab==='cost'){const bt=Object.entries(data.by_type).map(([k,v])=>`<span class="chip">${esc(k)}: ${vnd(v)}</span>`).join('');
+    return `<div class="chips" style="margin-bottom:10px">${bt}</div><table><tr><th>Lúc</th><th>Loại</th><th>Việc</th><th class="r">Tiền</th></tr>${data.ledger.map(r=>`<tr><td class="mut">${esc(r.luc.slice(5))}</td><td>${esc(r.loai)}</td><td>${esc(r.ghi_chu)}</td><td class="r">${vnd(r.vnd)}</td></tr>`).join('')}</table>`}
+  if(tab==='hand')return `<table><tr><th>Lúc</th><th>Từ → cho</th><th>Đã làm</th><th class="r">Chi phí</th></tr>${data.handoffs.slice().reverse().map(h=>`<tr><td class="mut">${h.luc}</td><td>${esc(h.tu)} → ${esc(h.cho)}</td><td>${esc(h.da_lam)}${h.luu_y?`<div style="color:var(--warn)">⚠ ${esc(h.luu_y)}</div>`:''}</td><td class="r">${vnd(h.chi_phi_vnd)}</td></tr>`).join('')}</table>`;
+  if(tab==='files'){const F=data.files;const txt=['story.md','story_goc.md','can_ve.json','storyboard.json','short.json','marketing.md'].filter(x=>F[x]);
+    return `<div class="chips" style="margin-bottom:12px">${txt.map(x=>`<a class="chip" href="#" onclick="view('${x}','${f(x)}');return false">📄 ${x}</a>`).join('')}
+    ${F['luoi_canh.png']?`<a class="chip" href="${f('luoi_canh.png')}" target="_blank">🖼 luoi_canh.png</a>`:''}</div>${finalBox()}`}
+  return ''}
+
+function stepInfo(i){const x=data.steps[i];const h=x.handoff;
+  let b=`<p class="mut">${esc(x.role)} · công cụ: ${esc(x.tool)}</p>`;
+  if(x.status==='dang_lam')b+=`<p><b>Đang làm:</b> <code>${esc(data.live.line||'…')}</code></p>`;
+  if(h)b+=`<table><tr><th>Lúc</th><td>${h.luc}</td></tr><tr><th>Đã làm</th><td>${esc(h.da_lam)}</td></tr>${h.luu_y?`<tr><th>Lưu ý</th><td>${esc(h.luu_y)}</td></tr>`:''}<tr><th>Bàn giao cho</th><td>${esc(h.cho)}</td></tr><tr><th>Chi phí</th><td>${vnd(h.chi_phi_vnd)}</td></tr><tr><th>File</th><td>${(h.file||[]).map(esc).join(', ')}</td></tr></table>`;
+  else if(!x.gate)b+='<p class="mut">Chưa làm.</p>';
+  const outs=(x.outputs||[]).filter(o=>/\.(md|json|png|mp4)$/.test(o));
+  b+=`<div class="chips" style="margin-top:12px">${x.profile?`<a class="chip" href="#" onclick="view('Hồ sơ ${esc(x.label)}','/ho-so/${x.profile}');return false">👤 Hồ sơ & chỉ dẫn AI</a>`:''}
+   ${outs.map(o=>`<a class="chip" href="${f(o)}" target="_blank">📎 ${o}</a>`).join('')}</div>`;
+  b+=`<div id="sv" style="margin-top:16px"><span class="mut">Đang tải kết quả…</span></div>`;
+  $('#dlgT').textContent=`${x.icon} ${x.label} — ${STAT[x.status][1]}`;$('#dlgOpen').removeAttribute('href');$('#dlgB').innerHTML=b;dlg.showModal();
+  const pid=cur;stepView(x).then(v=>{if(cur===pid&&$('#sv'))$('#sv').innerHTML=v||''}).catch(e=>{if($('#sv'))$('#sv').innerHTML=`<span class="mut">Không tải được: ${esc(e.message)}</span>`})}
+
+// ---------- Xem kết quả từng nhân viên (chỉ tải khi mở hộp) ----------
+const VER=()=>Date.now();
+const pf=(name)=>`/f/${cur}/${name}?v=${VER()}`;
+const lib=(p)=>`/lib/${p}?v=${VER()}`;
+async function getJ(name){const r=await fetch(pf(name));return r.ok?r.json():null}
+async function getT(name){const r=await fetch(pf(name));return r.ok?r.text():null}
+const img=(src,cap,cls='th')=>`<a href="${src}" target="_blank" class="${cls}" title="${esc(cap)}"><img loading="lazy" src="${src}" onerror="this.parentNode.classList.add('miss')"><span>${esc(cap)}</span></a>`;
+const sec=(t,body)=>`<h4 class="svh">${t}</h4>${body}`;
+const words=s=>(s.match(/\S+/g)||[]).length;
+
+function storyHTML(t){const ls=t.split('\n');const title=(ls.find(l=>l.startsWith('# '))||'').slice(2);
+  const body=ls.filter(l=>!l.startsWith('# ')).join('\n').split(/\n\s*\n/).map(p=>p.trim()).filter(Boolean);
+  const w=words(body.join(' '));
+  return `<div class="mut" style="margin-bottom:8px">${w.toLocaleString('vi-VN')} chữ · ~${(w/240).toFixed(1)} phút đọc · ${body.length} đoạn</div>
+   <div class="story"><h3>${esc(title)}</h3>${body.map(p=>`<p>${esc(p)}</p>`).join('')}</div>`}
+
+async function board(){const b=await getJ('storyboard.json');if(!b)return null;
+  b.lib=Object.fromEntries(b.nhan_vat.map(c=>[c.id,c.lib_id]));b.ten=Object.fromEntries(b.nhan_vat.map(c=>[c.id,c.ten]));return b}
+const bgOf=(b,s)=>s.dac_biet_en?pf(`dac_biet/${String(s.id).padStart(3,'0')}.png`):lib(`nen/${s.nen}.png`);
+const charImg=(b,c)=>lib(`nhan_vat/${b.lib[c.id]}/${c.bieu_cam}.png`);
+
+async function stepView(x){const c=x.code;
+  if(c==='bien_kich'){const t=await getT('story.md');if(!t)return '<p class="mut">Chưa có kịch bản.</p>';
+    const old=await getT('story_v0.md');
+    return sec('📜 Kịch bản',storyHTML(t))+(old?`<details style="margin-top:10px"><summary>Bản cũ (story_v0.md) để so sánh</summary>${storyHTML(old)}</details>`:'')}
+  if(c==='dao_dien'){const b=await board();if(!b)return '<p class="mut">Chưa phân cảnh.</p>';
+    const chars=`<div class="grid">${b.nhan_vat.map(n=>img(lib(`nhan_vat/${n.lib_id}/goc.png`),n.ten)).join('')}</div>`;
+    const rows=b.canh.map(s=>`<tr class="${s.dac_biet_en?'db':''}"><td class="mut">${s.id}${s.dac_biet_en?'<br><b title="Cảnh vẽ nguyên khung">★ĐB</b>':''}</td>
+      <td class="scn"><div class="scnbox"><img loading="lazy" src="${bgOf(b,s)}">${s.dac_biet_en?'':`<div class="ppl">${s.nhan_vat.map(n=>`<img loading="lazy" src="${charImg(b,n)}" title="${esc(b.ten[n.id])}: ${esc(n.bieu_cam)}">`).join('')}</div>`}</div></td>
+      <td>${esc(s.loi_ke)}${s.chu_nhan?`<div class="emph">${esc(s.chu_nhan)}</div>`:''}
+      <div class="mut sm">${s.dac_biet_en?'Vẽ nguyên khung: '+esc(s.dac_biet_en.slice(0,140)):`nền ${esc(s.nen)} · `+s.nhan_vat.map(n=>`${esc(b.ten[n.id])}: ${esc(n.bieu_cam)} (${esc(n.vi_tri)}, ${esc(n.chuyen_dong)})`).join(' · ')}</div></td></tr>`).join('');
+    return sec('👥 Nhân vật',chars)+sec(`🎬 ${b.canh.length} cảnh`,`<table class="scenes">${rows}</table>`)}
+  if(c==='thu_vien'||c==='@ngan_sach'){const n=await getJ('can_ve.json');if(!n)return '<p class="mut">Chưa có danh sách.</p>';
+    const li=(t,a)=>a.length?`<tr><th>${t} (${a.length})</th><td>${a.map(esc).join('<br>')}</td></tr>`:'';
+    return sec('🧾 Cần vẽ',`<table>${li('Nhân vật gốc',n.nhan_vat_goc||[])}${li('Biểu cảm',Object.entries(n.bieu_cam||{}).map(([k,v])=>`${k} — ${v}`))}
+      ${li('Nền',Object.entries(n.nen||{}).map(([k,v])=>`${k} — ${v}`))}${li('Cảnh vẽ nguyên khung',(n.dac_biet||[]).map(s=>'cảnh '+s))}
+      <tr><th>Ước tính</th><td><b>${vnd(n.uoc_tinh_vnd)}</b></td></tr></table>`)}
+  if(c==='hoa_si'||c==='@duyet_anh'||c==='@claude_anh'){const b=await board();if(!b)return '<p class="mut">Chưa có ảnh.</p>';
+    const used={};b.canh.forEach(s=>s.nhan_vat.forEach(n=>{(used[n.id]=used[n.id]||new Set()).add(n.bieu_cam)}));
+    const ch=b.nhan_vat.map(n=>`<div class="grp"><b>${esc(n.ten)}</b><div class="grid">${img(lib(`nhan_vat/${n.lib_id}/goc.png`),'ảnh gốc')}
+      ${[...(used[n.id]||[])].sort().map(bc=>img(lib(`nhan_vat/${n.lib_id}/${bc}.png`),bc)).join('')}</div></div>`).join('');
+    const bgs=[...new Set(b.canh.filter(s=>!s.dac_biet_en).map(s=>s.nen))];
+    const dbs=b.canh.filter(s=>s.dac_biet_en);
+    return (data.files['luoi_canh.png']?sec('🗂 Ảnh lưới',img(pf('luoi_canh.png'),'luoi_canh.png','wide')):'')
+      +sec('🧍 Nhân vật & biểu cảm dùng trong video',ch)
+      +sec(`🏞 Nền (${bgs.length})`,`<div class="grid big">${bgs.map(n=>img(lib(`nen/${n}.png`),n)).join('')}</div>`)
+      +sec(`★ Cảnh vẽ nguyên khung (${dbs.length})`,dbs.length?`<div class="grid big">${dbs.map(s=>img(bgOf(b,s),'cảnh '+s.id+': '+s.loi_ke.slice(0,60))).join('')}</div>`:'<p class="mut">Không có.</p>')
+      +'<p class="mut sm">Ô gạch chéo = ảnh chưa có. Bấm ảnh để mở to ở tab mới.</p>'}
+  if(c==='long_tieng'||c==='long_tieng_shorts'){const sh=c==='long_tieng_shorts';
+    const items=sh?((await getJ('short.json'))||{}).canh:((await board())||{}).canh;const tm=await getJ(sh?'short/timing.json':'timing.json');
+    if(!items||!tm)return '<p class="mut">Chưa có giọng.</p>';
+    let tot=0,bad=0;const rows=items.map(s=>{const t=tm[String(s.id)];const d=t?t.dur:0;tot+=d;const cps=d?s.loi_ke.length/d:0;const off=d&&(cps<9||cps>26);if(off)bad++;
+      return `<tr class="${off?'off':''}"><td class="mut">${s.id}</td><td>${t?`<audio controls preload="none" src="${pf((sh?'short/voice/':'voice/')+String(s.id).padStart(3,'0')+'.mp3')}"></audio>`:'<span class="mut">thiếu</span>'}</td>
+      <td class="r">${d?d.toFixed(1)+'s':''}<div class="sm ${off?'':'mut'}">${d?cps.toFixed(0)+' ký tự/s':''}</div></td><td>${esc(s.loi_ke)}</td></tr>`}).join('');
+    return sec(`🎙 ${items.length} câu · ${(tot/60).toFixed(1)} phút`+(bad?` · <span style="color:var(--bad)">${bad} câu tốc độ bất thường</span>`:''),`<table class="voice">${rows}</table>`)}
+  if(c==='dung_phim_dai'||c==='dung_phim_shorts'){const n=c==='dung_phim_dai'?'final_16x9.mp4':'final_9x16.mp4';
+    return data.files[n]?sec('🎞 '+n,`<video controls preload="metadata" src="${f(n)}" style="width:100%;max-height:60vh;background:#000;border-radius:8px"></video>`):'<p class="mut">Chưa dựng.</p>'}
+  if(c==='bien_tap_shorts'){const s=await getJ('short.json');if(!s)return '<p class="mut">Chưa có kịch bản Shorts.</p>';const b=await board();
+    const rows=s.canh.map(x=>{const src=b&&b.canh.find(y=>y.id===x.dung_canh);return `<tr><td class="mut">${x.id}</td>
+      <td class="scn">${src?`<div class="scnbox sm9"><img loading="lazy" src="${bgOf(b,src)}">${src.dac_biet_en?'':`<div class="ppl">${src.nhan_vat.map(n=>`<img loading="lazy" src="${charImg(b,n)}">`).join('')}</div>`}</div>`:''}<div class="mut sm">dùng cảnh ${x.dung_canh}</div></td>
+      <td>${esc(x.loi_ke)}${x.chu_nhan?`<div class="emph">${esc(x.chu_nhan)}</div>`:''}</td></tr>`}).join('');
+    return sec(`📱 Tiêu đề trên: ${esc(s.tieu_de_tren||'')}`,`<table class="scenes">${rows}</table>`)}
+  if(c==='marketing'){return sec('📣 Marketing',`<pre class="mk">${esc(data.marketing||'Chưa có.')}</pre>`)
+    +sec('🖼 Thumbnail',`<div class="thumbs">${['thumbnail_A.png','thumbnail_B.png'].filter(n=>data.files[n]).map(n=>img(f(n),n,'wide')).join('')}</div>`)}
+  if(c==='@duyet_cuoi'||c==='@claude_video')return sec('🎬 Bản cuối',finalBox());
+  if(c==='@claude_kich_ban'){const t=await getT('story.md');return t?sec('📜 Kịch bản đang chờ duyệt',storyHTML(t)):''}
+  return ''}
+
+function redo(){const b=$('#redo').value;if(!b)return toast('Chọn bước');
+  if(confirm(`Xoá kết quả từ bước "${$('#redo').selectedOptions[0].text}" trở đi rồi làm lại? (bước làm lại có thể tốn tiền — sẽ dừng ở cổng duyệt như thường)`))post(`/api/p/${cur}/lam-lai`,{buoc:b})}
+
+async function refresh(){
+  try{const ps=await (await fetch('/api/projects')).json();
+    if(!cur&&ps.length)cur=ps[0].id;plist(ps);
+    if(cur){const r=await fetch('/api/p/'+cur);if(r.ok){data=await r.json();if(dlg.open)return;
+      const {now,log,live,...rest}=data;const sig=cur+tab+JSON.stringify(rest)+JSON.stringify({...live,line:0});
+      if(sig!==lastSig){lastSig=sig;render()}else live_update();
+      const hx=(location.hash.match(/xem=([@\w]+)/)||[])[1];  // link #xem=<mã bước> → mở thẳng hộp của nhân viên đó
+      if(hx&&!window._xemDone){window._xemDone=1;const i=data.steps.findIndex(s=>s.code===hx);if(i>=0)stepInfo(i)}}}
+    $('#tick').textContent='cập nhật '+new Date().toLocaleTimeString('vi-VN')}
+  catch(e){$('#tick').textContent='⚠ mất kết nối máy chủ'}}
+refresh();setInterval(refresh,2000);
+</script>
+</body>
+</html>

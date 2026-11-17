@@ -1,0 +1,30 @@
+# Bí mật — KHÔNG BAO GIỜ đẩy lên
+.env
+.env.*
+!.env.example
+
+# Môi trường / bộ nhớ đệm
+.venv/
+__pycache__/
+*.pyc
+studio/node_modules/
+.claude/
+.DS_Store
+*.log
+*.tmp
+
+# Dữ liệu video, ảnh, giọng (chỉ đẩy code)
+projects/
+library/
+lab/*
+!lab/models.json
+studio/public/
+studio/out/
+*.mp4
+*.mov
+*.mp3
+*.wav
+*.png
+*.jpg
+*.jpeg
+*.webp
